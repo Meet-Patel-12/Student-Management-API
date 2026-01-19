@@ -1,197 +1,225 @@
-# Student Management API
+# Backend – Role-Based Student Management System
 
-A scalable **Student Management REST API** built using **Node.js**, **Express.js**, and **MongoDB**.  
-This project is designed to manage student records efficiently with clean architecture, pagination, proper error handling, and secure API practices.
-
----
-
-## 📌 Table of Contents
-
-- Overview
-- Features
-- Tech Stack
-- API Endpoints
-- Getting Started
-- Environment Variables
-- Running the Project
-- API Usage Examples
-- Pagination & Performance
-- Error Handling
-- Contributing
-- License
-
----
-
-## 🔍 Overview
-
-The **Student Management API** provides backend functionality to manage student data such as:
-
-- Creating student records
-- Fetching students with pagination
-- Updating student details
-- Deleting student records
-
-This API is suitable for:
-- College projects
-- Admin dashboards
-- Learning backend development
-- Integration with frontend applications
+This is the **backend service** for the Role-Based Student Management System.  
+It provides secure REST APIs with **JWT authentication**, **role-based access control**, and **admin approval workflow**.
 
 ---
 
 ## 🚀 Features
 
-- RESTful API design
-- CRUD operations for students
-- Pagination for large datasets
-- MongoDB integration using Mongoose
-- Centralized error handling
-- Clean MVC folder structure
-- JSON-based API responses
-- Scalable and production-ready structure
+- ✅ Role-based authentication (Admin / Student)
+- ✅ Admin approval before password setup
+- ✅ Secure JWT-based login
+- ✅ Student CRUD with ownership-based access
+- ✅ Pagination, search, and sorting
+- ✅ MongoDB indexing for performance (1000+ records)
+- ✅ Centralized error handling
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠 Tech Stack
 
-- **Node.js** – JavaScript runtime
-- **Express.js** – Backend framework
-- **MongoDB** – NoSQL database
-- **Mongoose** – MongoDB ODM
-- **dotenv** – Environment variable management
-- **CORS** – Cross-origin request handling
-
----
-
-## 🧩 API Endpoints
-
-### 🧑‍🎓 Student Routes
-
-| Method | Endpoint | Description |
-|------|---------|-------------|
-| GET | `/api/students` | Get all students (paginated) |
-| GET | `/api/students/:id` | Get student by ID |
-| POST | `/api/students` | Create new student |
-| PUT | `/api/students/:id` | Update student |
-| DELETE | `/api/students/:id` | Delete student |
+- **Node.js** – Runtime environment
+- **Express.js** – Web framework
+- **MongoDB + Mongoose** – Database & ODM
+- **JWT** – JSON Web Token authentication
+- **bcryptjs** – Password hashing
+- **dotenv** – Environment configuration
 
 ---
 
-## 🚀 Getting Started
+## 📂 Backend Folder Structure
 
-### 📌 Prerequisites
-
-Make sure you have installed:
-
-- Node.js (v16 or above)
-- npm
-- MongoDB (Local or MongoDB Atlas)
-
----
-
-### 📥 Installation
-
-Clone the repository:
-
-- git clone https://github.com/Meet-Patel-12/Student-Management-API.git
-- cd Student-Management-API
-- npm install
-
----
-
-### 📡 Environment Variables
-
-Create a .env file in the root directory and add:
-
-- PORT=5000
-- MONGODB_URI=your_mongodb_connection_string
-
----
-
-### 🏁 Running the Project
-
-Start the development server:
-
-- npm run dev 
-
----
-
-### 📘 API Usage Examples
-
-### ➕ Create Student
-
-**Endpoint:** `POST /api/students`
-
-**Request Body:**
-
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "age": 20,
-  "course": "Computer Science"
-}
+```
+Backend/
+│
+├── controllers/      # Business logic
+├── models/           # Mongoose schemas
+├── routes/           # API routes
+├── middlewares/      # Auth & error middleware
+├── config/           # DB configuration
+├── utils/            # AppError & helpers
+│
+├── app.js            # Express app setup
+├── server.js         # Server entry point
+├── package.json      # Dependencies
+└── .env              # Environment variables (not committed)
 ```
 
-### ✏️ Update Student
+---
 
-**Endpoint:** `PUT/api/students/:id`
+## ⚙️ Environment Variables
 
-**Request Body:**
+Create a `.env` file inside the `Backend/` folder:
 
-```json
-{
-  "name": "John Doe update",
-  "email": "doe@example.com",
-  "course": "Artificial Intelligence"
-}
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
 ```
----
 
-### 📊 Pagination & Performance
-
-Pagination is implemented using:
-
-- page
-- limit
-
-This ensures:
-
-- Faster responses
-- Efficient handling of large datasets (1000+ records)
-- Reduced server load
+> ⚠️ **Never commit `.env` to GitHub.**
 
 ---
 
-### ⚠️ Error Handling
+## ▶️ How to Run Backend Locally
 
-- Custom error class (AppError)
+### 1️⃣ Go to Backend folder
+
+```bash
+cd Backend
+```
+
+### 2️⃣ Install dependencies
+
+```bash
+npm install
+```
+
+### 3️⃣ Start development server
+
+```bash
+npm run dev
+```
+
+Server will run on:
+
+```
+http://localhost:5000
+```
+
+---
+
+## 🔐 Authentication Flow (Important)
+
+### Student
+
+1. Student registers (no password)
+2. Admin approves student
+3. Student sets password
+4. Student logs in (JWT issued)
+
+### Admin
+
+1. Admin registers
+2. First admin approved manually (one-time)
+3. Admin sets password
+4. Admin logs in
+5. Admin can approve/reject users
+
+---
+
+## 📡 API Overview
+
+### 🔑 Auth APIs
+
+| Method | Endpoint                     | Description                 |
+| ------ | ---------------------------- | --------------------------- |
+| `POST` | `/api/auth/admin/register`   | Admin registration          |
+| `POST` | `/api/auth/admin/login`      | Admin login                 |
+| `POST` | `/api/auth/student/register` | Student registration        |
+| `POST` | `/api/auth/student/login`    | Student login               |
+| `POST` | `/api/auth/set-password`     | Set password after approval |
+
+---
+
+### 👑 Admin APIs
+
+| Method  | Endpoint                   | Description        |
+| ------- | -------------------------- | ------------------ |
+| `GET`   | `/api/admin/pending-users` | View pending users |
+| `PATCH` | `/api/admin/approve/:id`   | Approve user       |
+| `PATCH` | `/api/admin/reject/:id`    | Reject user        |
+
+> 🔒 **Requires Admin JWT token**
+
+---
+
+### 🎓 Student APIs
+
+| Method   | Endpoint                   | Access                   |
+| -------- | -------------------------- | ------------------------ |
+| `GET`    | `/api/students`            | Admin: all, Student: own |
+| `GET`    | `/api/students/:id`        | Admin / Own student      |
+| `POST`   | `/api/students`            | Admin only               |
+| `PUT`    | `/api/students/:id`        | Admin only               |
+| `DELETE` | `/api/students/:id`        | Admin only               |
+| `PUT`    | `/api/students/me/profile` | Student own profile      |
+
+---
+
+## 🔍 Pagination, Search & Sorting
+
+Example:
+
+```
+GET /api/students?page=1&limit=10&search=cse&sortBy=year&order=asc
+```
+
+- **Pagination** for large datasets
+- **Search** by name or enrollment number
+- **Sorting** by name, year, enrollmentNo
+
+---
+
+## 🧪 Testing with Postman
+
+1. Login to get JWT token
+2. Add header:
+
+```
+Authorization: Bearer <TOKEN>
+```
+
+3. Test protected APIs
+
+---
+
+## 🧠 Error Handling
+
 - Centralized error middleware
+- Custom `AppError` class
 - Proper HTTP status codes
-- Clean error messages for invalid IDs and requests
 
 ---
 
-### 🤝 Contributing
+## 🔮 Future Improvements
 
-Contributions are welcome!
-
-Steps:
-- Fork the repository
-- Create a new branch
-- Commit your changes
-- Open a Pull Request
+- 📄 API documentation using Swagger
+- 🧪 Automated testing (Jest)
+- 🔑 Password reset flow
+- 🛡️ Rate limiting & security headers
 
 ---
 
-### 📜 License
+## 📌 Notes
 
-This project is licensed under the MIT License.
+- `.env` file is ignored via `.gitignore`
+- `node_modules` not committed
+- Backend is ready for frontend integration
 
 ---
 
-### ⭐ Author
+## 👨‍💻 Author
 
-Meet Patel
-B.Tech CSE (AI) Student
-Backend & MERN Stack Developer
+**Meet Patel**  
+Role-Based Student Management System – Backend
+
+---
+
+## 📄 License
+
+<!-- This project is open source and available under the [MIT License](LICENSE). -->
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!  
+Feel free to check the [issues page](../../issues).
+
+---
+
+## ⭐ Show your support
+
+Give a ⭐️ if this project helped you!
