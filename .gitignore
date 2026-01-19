@@ -32,13 +32,6 @@ Thumbs.db
 .vscode/
 
 # ========================
-# React (future frontend)
-# ========================
-client/node_modules/
-client/build/
-dist/
-
-# ========================
 # Coverage
 # ========================
 coverage/
